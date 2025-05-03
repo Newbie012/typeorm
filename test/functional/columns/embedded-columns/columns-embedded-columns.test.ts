@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { expect } from "chai"
+import { describe, beforeAll, beforeEach, afterAll, it, expect } from "vitest"
 import { DataSource } from "../../../../src/data-source/DataSource"
 import {
     closeTestingConnections,
@@ -13,17 +13,16 @@ import { Post } from "./entity/Post"
 
 describe("columns > embedded columns", () => {
     let connections: DataSource[]
-    before(
-        async () =>
-            (connections = await createTestingConnections({
-                entities: [__dirname + "/entity/*{.js,.ts}"],
-            })),
-    )
+    beforeAll(async () => {
+        connections = await createTestingConnections({
+            entities: [__dirname + "/entity/*{.js,.ts}"],
+        })
+    })
     beforeEach(() => reloadTestingDatabases(connections))
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
-    it("should insert / update / remove entity with embedded correctly", () =>
-        Promise.all(
+    it("should insert / update / remove entity with embedded correctly", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const postRepository = connection.getRepository(SimplePost)
 
@@ -43,22 +42,18 @@ describe("columns > embedded columns", () => {
                     title: "Post",
                 })
 
-                expect(loadedPost).to.be.not.empty
-                expect(loadedPost!.counters).to.be.not.empty
-                expect(loadedPost!.counters.information).to.be.not.empty
-                loadedPost!.should.be.instanceOf(SimplePost)
-                loadedPost!.title.should.be.equal("Post")
-                loadedPost!.text.should.be.equal("Everything about post")
-                loadedPost!.counters.should.be.instanceOf(SimpleCounters)
-                loadedPost!.counters.likes.should.be.equal(5)
-                loadedPost!.counters.comments.should.be.equal(1)
-                loadedPost!.counters.favorites.should.be.equal(10)
-                loadedPost!.counters.information.should.be.instanceOf(
-                    Information,
-                )
-                loadedPost!.counters.information.description.should.be.equal(
-                    "Hello post",
-                )
+                expect(loadedPost).not.toBeNull()
+                expect(loadedPost!.counters).not.toBeNull()
+                expect(loadedPost!.counters.information).not.toBeNull()
+                expect(loadedPost).toBeInstanceOf(SimplePost)
+                expect(loadedPost!.title).toBe("Post")
+                expect(loadedPost!.text).toBe("Everything about post")
+                expect(loadedPost!.counters).toBeInstanceOf(SimpleCounters)
+                expect(loadedPost!.counters.likes).toBe(5)
+                expect(loadedPost!.counters.comments).toBe(1)
+                expect(loadedPost!.counters.favorites).toBe(10)
+                expect(loadedPost!.counters.information).toBeInstanceOf(Information)
+                expect(loadedPost!.counters.information.description).toBe("Hello post")
 
                 post.title = "Updated post"
                 post.counters.comments = 2
@@ -69,22 +64,18 @@ describe("columns > embedded columns", () => {
                     title: "Updated post",
                 })
 
-                expect(loadedUpdatedPost).to.be.not.empty
-                expect(loadedUpdatedPost!.counters).to.be.not.empty
-                expect(loadedUpdatedPost!.counters.information).to.be.not.empty
-                loadedUpdatedPost!.should.be.instanceOf(SimplePost)
-                loadedUpdatedPost!.title.should.be.equal("Updated post")
-                loadedUpdatedPost!.text.should.be.equal("Everything about post")
-                loadedUpdatedPost!.counters.should.be.instanceOf(SimpleCounters)
-                loadedUpdatedPost!.counters.likes.should.be.equal(5)
-                loadedUpdatedPost!.counters.comments.should.be.equal(2)
-                loadedUpdatedPost!.counters.favorites.should.be.equal(10)
-                loadedUpdatedPost!.counters.information.should.be.instanceOf(
-                    Information,
-                )
-                loadedUpdatedPost!.counters.information.description.should.be.equal(
-                    "Hello updated post",
-                )
+                expect(loadedUpdatedPost).not.toBeNull()
+                expect(loadedUpdatedPost!.counters).not.toBeNull()
+                expect(loadedUpdatedPost!.counters.information).not.toBeNull()
+                expect(loadedUpdatedPost).toBeInstanceOf(SimplePost)
+                expect(loadedUpdatedPost!.title).toBe("Updated post")
+                expect(loadedUpdatedPost!.text).toBe("Everything about post")
+                expect(loadedUpdatedPost!.counters).toBeInstanceOf(SimpleCounters)
+                expect(loadedUpdatedPost!.counters.likes).toBe(5)
+                expect(loadedUpdatedPost!.counters.comments).toBe(2)
+                expect(loadedUpdatedPost!.counters.favorites).toBe(10)
+                expect(loadedUpdatedPost!.counters.information).toBeInstanceOf(Information)
+                expect(loadedUpdatedPost!.counters.information.description).toBe("Hello updated post")
 
                 await postRepository.remove(post)
 
@@ -94,19 +85,20 @@ describe("columns > embedded columns", () => {
                 const removedUpdatedPost = await postRepository.findOneBy({
                     title: "Updated post",
                 })
-                expect(removedPost).to.be.null
-                expect(removedUpdatedPost).to.be.null
+                expect(removedPost).toBeNull()
+                expect(removedUpdatedPost).toBeNull()
             }),
-        ))
+        )
+    })
 
-    it("should properly generate column names", () =>
-        Promise.all(
+    it("should properly generate column names", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const postRepository = connection.getRepository(Post)
                 const columns = postRepository.metadata.columns
                 const databaseColumns = columns.map((c) => c.databaseName)
 
-                expect(databaseColumns).to.have.members([
+                expect(databaseColumns).toEqual([
                     // Post
                     // Post.id
                     "id",
@@ -158,5 +150,6 @@ describe("columns > embedded columns", () => {
                     "descr",
                 ])
             }),
-        ))
+        )
+    })
 })

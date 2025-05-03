@@ -3,6 +3,7 @@ import {
     Entity,
     OneToOne,
     PrimaryGeneratedColumn,
+    Relation,
 } from "../../../src/index"
 import { Post } from "./Post"
 
@@ -17,5 +18,5 @@ export class PostInformation {
     @OneToOne(() => Post, (post) => post.information, {
         cascade: ["update"],
     })
-    post: Post
+    post: Relation<Post>
 }

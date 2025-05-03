@@ -3,6 +3,7 @@ import {
     Entity,
     OneToMany,
     PrimaryGeneratedColumn,
+    Relation
 } from "../../../../src"
 import { Student } from "./Student"
 
@@ -15,5 +16,5 @@ export class Teacher {
     name: string
 
     @OneToMany(() => Student, (student) => student.teacher)
-    students: Student[]
+    students: Relation<Student>[]
 }

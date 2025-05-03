@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, beforeAll, afterAll, it, expect } from "vitest"
 import "reflect-metadata"
 import {
     DataSource,
@@ -18,7 +18,7 @@ import { TimeSheet } from "./entity/TimeSheet"
 
 describe("column > virtual columns", () => {
     let connections: DataSource[]
-    before(async () => {
+    beforeAll(async () => {
         connections = await createTestingConnections({
             schemaCreate: true,
             dropSchema: true,
@@ -50,10 +50,10 @@ describe("column > virtual columns", () => {
             }
         }
     })
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
-    it("should generate expected sub-select & select statement", () =>
-        Promise.all(
+    it("should generate expected sub-select & select statement", async () => {
+        await Promise.all(
             connections.map((connection) => {
                 const options1: FindManyOptions<Company> = {
                     select: {
@@ -71,12 +71,13 @@ describe("column > virtual columns", () => {
                 if (DriverUtils.isMySQLFamily(connection.driver)) {
                     expectedQuery = expectedQuery.replaceAll('"', "`")
                 }
-                expect(query1).to.eq(expectedQuery)
+                expect(query1).toBe(expectedQuery)
             }),
-        ))
+        )
+    })
 
-    it("should generate expected sub-select & nested-subselect statement", () =>
-        Promise.all(
+    it("should generate expected sub-select & nested-subselect statement", async () => {
+        await Promise.all(
             connections.map((connection) => {
                 const findOptions: FindManyOptions<Company> = {
                     select: {
@@ -106,13 +107,14 @@ describe("column > virtual columns", () => {
                     expectedQuery1 = expectedQuery1.replaceAll('"', "`")
                     expectedQuery2 = expectedQuery2.replaceAll('"', "`")
                 }
-                expect(query).to.include(expectedQuery1)
-                expect(query).to.include(expectedQuery2)
+                expect(query).toContain(expectedQuery1)
+                expect(query).toContain(expectedQuery2)
             }),
-        ))
+        )
+    })
 
-    it("should not generate sub-select if column is not selected", () =>
-        Promise.all(
+    it("should not generate sub-select if column is not selected", async () => {
+        await Promise.all(
             connections.map((connection) => {
                 const options: FindManyOptions<Company> = {
                     select: {
@@ -129,12 +131,13 @@ describe("column > virtual columns", () => {
                 if (DriverUtils.isMySQLFamily(connection.driver)) {
                     expectedQuery = expectedQuery.replaceAll('"', "`")
                 }
-                expect(query).to.eq(expectedQuery)
+                expect(query).toBe(expectedQuery)
             }),
-        ))
+        )
+    })
 
-    it("should be able to save and find sub-select data in the database", () =>
-        Promise.all(
+    it("should be able to save and find sub-select data in the database", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const activityRepository = connection.getRepository(Activity)
                 const companyRepository = connection.getRepository(Company)
@@ -228,17 +231,17 @@ describe("column > virtual columns", () => {
                 const usersUnderCompany = await companyRepository.findOne(
                     findOneOptions,
                 )
-                expect(usersUnderCompany?.totalEmployeesCount).to.eq(4)
+                expect(usersUnderCompany?.totalEmployeesCount).toBe(4)
                 const employee1TimesheetFound = usersUnderCompany?.employees
                     .find((e) => e.name === employee1.name)
                     ?.timesheets.find((ts) => ts.id === employee1TimeSheet.id)
-                expect(employee1TimesheetFound?.totalActivityHours).to.eq(6)
+                expect(employee1TimesheetFound?.totalActivityHours).toBe(6)
 
                 const usersUnderCompanyList = await companyRepository.find(
                     findOneOptions,
                 )
                 const usersUnderCompanyListOne = usersUnderCompanyList[0]
-                expect(usersUnderCompanyListOne?.totalEmployeesCount).to.eq(4)
+                expect(usersUnderCompanyListOne?.totalEmployeesCount).toBe(4)
                 const employee1TimesheetListOneFound =
                     usersUnderCompanyListOne?.employees
                         .find((e) => e.name === employee1.name)
@@ -247,9 +250,10 @@ describe("column > virtual columns", () => {
                         )
                 expect(
                     employee1TimesheetListOneFound?.totalActivityHours,
-                ).to.eq(6)
+                ).toBe(6)
             }),
-        ))
+        )
+    })
 
     it("should be able to save and find sub-select data in the database (with query builder)", () =>
         Promise.all(

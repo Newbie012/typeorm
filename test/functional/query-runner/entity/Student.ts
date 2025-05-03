@@ -4,6 +4,7 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     Index,
+    Relation,
 } from "../../../../src"
 import { Faculty } from "./Faculty"
 import { Teacher } from "./Teacher"
@@ -18,8 +19,8 @@ export class Student {
     name: string
 
     @ManyToOne(() => Faculty)
-    faculty: Faculty
+    faculty: Relation<Faculty>
 
     @ManyToOne(() => Teacher)
-    teacher: Teacher
+    teacher: Relation<Teacher>
 }

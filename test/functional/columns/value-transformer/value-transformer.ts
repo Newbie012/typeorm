@@ -1,32 +1,29 @@
 import "reflect-metadata"
-
+import { describe, beforeAll, beforeEach, afterAll, it, expect } from "vitest"
 import {
     closeTestingConnections,
     createTestingConnections,
     reloadTestingDatabases,
 } from "../../../utils/test-utils"
-
 import { DataSource } from "../../../../src/data-source/DataSource"
 import { PhoneBook } from "./entity/PhoneBook"
 import { Complex, Post } from "./entity/Post"
 import { User } from "./entity/User"
 import { Category } from "./entity/Category"
 import { View } from "./entity/View"
-import { expect } from "chai"
 
 describe("columns > value-transformer functionality", () => {
     let connections: DataSource[]
-    before(
-        async () =>
-            (connections = await createTestingConnections({
-                entities: [Post, PhoneBook, User, Category, View],
-            })),
-    )
+    beforeAll(async () => {
+        connections = await createTestingConnections({
+            entities: [Post, PhoneBook, User, Category, View],
+        })
+    })
     beforeEach(() => reloadTestingDatabases(connections))
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
-    it("should marshal data using the provided value-transformer", () =>
-        Promise.all(
+    it("should marshal data using the provided value-transformer", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const postRepository = connection.getRepository(Post)
 
@@ -45,8 +42,8 @@ describe("columns > value-transformer functionality", () => {
                 const loadedPost = await postRepository.findOneBy({
                     id: post.id,
                 })
-                expect(loadedPost!.title).to.be.equal("About columns1")
-                expect(loadedPost!.tags).to.deep.eq(["very", "simple"])
+                expect(loadedPost!.title).toBe("About columns1")
+                expect(loadedPost!.tags).toEqual(["very", "simple"])
 
                 const phoneBookRepository = connection.getRepository(PhoneBook)
                 const phoneBook = new PhoneBook()
@@ -59,15 +56,16 @@ describe("columns > value-transformer functionality", () => {
                 const loadedPhoneBook = await phoneBookRepository.findOneBy({
                     id: phoneBook.id,
                 })
-                expect(loadedPhoneBook!.name).to.be.equal("George")
-                expect(loadedPhoneBook!.phones).not.to.be.undefined
-                expect(loadedPhoneBook!.phones.get("work")).to.equal(123456)
-                expect(loadedPhoneBook!.phones.get("mobile")).to.equal(1234567)
+                expect(loadedPhoneBook!.name).toBe("George")
+                expect(loadedPhoneBook!.phones).toBeDefined()
+                expect(loadedPhoneBook!.phones.get("work")).toBe(123456)
+                expect(loadedPhoneBook!.phones.get("mobile")).toBe(1234567)
             }),
-        ))
+        )
+    })
 
-    it("should apply three transformers in the right order", () =>
-        Promise.all(
+    it("should apply three transformers in the right order", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const userRepository = await connection.getRepository(User)
                 const email = `${connection.name}@JOHN.doe`
@@ -77,16 +75,15 @@ describe("columns > value-transformer functionality", () => {
                 await userRepository.save(user)
 
                 const dbUser = await userRepository.findOneBy({ id: user.id })
-                dbUser && dbUser.email.should.be.eql(email.toLocaleLowerCase())
+                expect(dbUser?.email).toBe(email.toLocaleLowerCase())
             }),
-        ))
+        )
+    })
 
-    it("should apply all the transformers", () =>
-        Promise.all(
+    it("should apply all the transformers", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
-                const categoryRepository = await connection.getRepository(
-                    Category,
-                )
+                const categoryRepository = await connection.getRepository(Category)
                 const description = `  ${connection.name}-DESCRIPTION   `
                 const category = new Category()
                 category.description = description
@@ -96,15 +93,13 @@ describe("columns > value-transformer functionality", () => {
                 const dbCategory = await categoryRepository.findOneBy({
                     id: category.id,
                 })
-                dbCategory &&
-                    dbCategory.description.should.be.eql(
-                        description.toLocaleLowerCase().trim(),
-                    )
+                expect(dbCategory?.description).toBe(description.toLocaleLowerCase().trim())
             }),
-        ))
+        )
+    })
 
-    it("should apply no transformer", () =>
-        Promise.all(
+    it("should apply no transformer", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const viewRepository = await connection.getRepository(View)
                 const title = `${connection.name}`
@@ -114,12 +109,13 @@ describe("columns > value-transformer functionality", () => {
                 await viewRepository.save(view)
 
                 const dbView = await viewRepository.findOneBy({ id: view.id })
-                dbView && dbView.title.should.be.eql(title)
+                expect(dbView?.title).toBe(title)
             }),
-        ))
+        )
+    })
 
-    it("should marshal data using a complex value-transformer", () =>
-        Promise.all(
+    it("should marshal data using a complex value-transformer", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const postRepository = connection.getRepository(Post)
 
@@ -130,7 +126,7 @@ describe("columns > value-transformer functionality", () => {
                 await postRepository.save(post)
 
                 let loadedPost = await postRepository.findOneBy({ id: post.id })
-                expect(loadedPost!.complex).to.eq(null)
+                expect(loadedPost!.complex).toBeNull()
 
                 // then update all its properties and save again
                 post.title = "Complex transformers2!"
@@ -140,14 +136,10 @@ describe("columns > value-transformer functionality", () => {
 
                 // check if all columns are updated except for readonly columns
                 loadedPost = await postRepository.findOneBy({ id: post.id })
-                expect(loadedPost!.title).to.be.equal("Complex transformers2!")
-                expect(loadedPost!.tags).to.deep.eq([
-                    "very",
-                    "complex",
-                    "actually",
-                ])
-                expect(loadedPost!.complex!.x).to.eq(3)
-                expect(loadedPost!.complex!.y).to.eq(2.5)
+                expect(loadedPost!.title).toBe("Complex transformers2!")
+                expect(loadedPost!.tags).toEqual(["very", "complex", "actually"])
+                expect(loadedPost!.complex!.x).toBe(3)
+                expect(loadedPost!.complex!.y).toBe(2.5)
 
                 // then update all its properties and save again
                 post.title = "Complex transformers3!"
@@ -156,7 +148,7 @@ describe("columns > value-transformer functionality", () => {
                 await postRepository.save(post)
 
                 loadedPost = await postRepository.findOneBy({ id: post.id })
-                expect(loadedPost!.complex).to.eq(null)
+                expect(loadedPost!.complex).toBeNull()
 
                 // then update all its properties and save again
                 post.title = "Complex transformers4!"
@@ -165,8 +157,8 @@ describe("columns > value-transformer functionality", () => {
                 await postRepository.save(post)
 
                 loadedPost = await postRepository.findOneBy({ id: post.id })
-                expect(loadedPost!.complex!.x).to.eq(0.5)
-                expect(loadedPost!.complex!.y).to.eq(0.5)
+                expect(loadedPost!.complex!.x).toBe(0.5)
+                expect(loadedPost!.complex!.y).toBe(0.5)
 
                 // then update all its properties and save again
                 post.title = "Complex transformers5!"
@@ -175,8 +167,9 @@ describe("columns > value-transformer functionality", () => {
                 await postRepository.save(post)
 
                 loadedPost = await postRepository.findOneBy({ id: post.id })
-                expect(loadedPost!.complex!.x).to.eq(1.05)
-                expect(loadedPost!.complex!.y).to.eq(2.3)
+                expect(loadedPost!.complex!.x).toBe(1.05)
+                expect(loadedPost!.complex!.y).toBe(2.3)
             }),
-        ))
+        )
+    })
 })

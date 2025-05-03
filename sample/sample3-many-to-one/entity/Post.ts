@@ -3,13 +3,14 @@ import {
     Entity,
     ManyToOne,
     PrimaryGeneratedColumn,
+    Relation,
 } from "../../../src/index"
-import { PostDetails } from "./PostDetails"
 import { PostCategory } from "./PostCategory"
 import { PostAuthor } from "./PostAuthor"
 import { PostInformation } from "./PostInformation"
 import { PostImage } from "./PostImage"
 import { PostMetadata } from "./PostMetadata"
+import { PostDetails } from "./PostDetails"
 
 @Entity("sample3_post")
 export class Post {
@@ -33,7 +34,7 @@ export class Post {
     @ManyToOne(() => PostDetails, (details) => details.posts, {
         cascade: ["insert"],
     })
-    details?: PostDetails
+    details?: Relation<PostDetails>
 
     // post has relation with details. cascade update here means if new PostDetail instance will be set to this relation
     // it will be inserted automatically to the db when you save this Post entity

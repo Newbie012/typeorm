@@ -1,11 +1,12 @@
-import { expect } from "chai"
+import "reflect-metadata"
+import { describe, it, expect, beforeAll, afterEach } from "vitest"
 import fs from "fs/promises"
 
 import { ConnectionOptionsReader } from "../../../src/connection/ConnectionOptionsReader"
 import { DataSourceOptions } from "../../../src/data-source/DataSourceOptions"
 
 describe("ConnectionOptionsReader", () => {
-    before(async () => {
+    beforeAll(async () => {
         // These files may not always exist
         await fs.mkdir("./temp/configs", { recursive: true })
         await fs.writeFile(
@@ -32,9 +33,9 @@ describe("ConnectionOptionsReader", () => {
         const options: DataSourceOptions = await connectionOptionsReader.get(
             "test-conn",
         )
-        expect(options.entities).to.be.an.instanceOf(Array)
+        expect(options.entities).toBeInstanceOf(Array)
         const entities: EntititesList = options.entities as EntititesList
-        expect(entities.length).to.equal(1)
+        expect(entities.length).toBe(1)
     })
 
     it("properly loads sqlite in-memory/path config", async () => {
@@ -44,10 +45,10 @@ describe("ConnectionOptionsReader", () => {
         })
         const inmemoryOptions: DataSourceOptions =
             await connectionOptionsReader.get("memory")
-        expect(inmemoryOptions.database).to.equal(":memory:")
+        expect(inmemoryOptions.database).toBe(":memory:")
         const fileOptions: DataSourceOptions =
             await connectionOptionsReader.get("file")
-        expect(fileOptions.database).to.have.string("/test")
+        expect(fileOptions.database).toContain("/test")
     })
 
     it("properly loads config with specified file path", async () => {
@@ -57,7 +58,7 @@ describe("ConnectionOptionsReader", () => {
         })
         const fileOptions: DataSourceOptions =
             await connectionOptionsReader.get("file")
-        expect(fileOptions.database).to.have.string("/test-js")
+        expect(fileOptions.database).toContain("/test-js")
     })
 
     it("properly loads asynchronous config with specified file path", async () => {
@@ -65,9 +66,8 @@ describe("ConnectionOptionsReader", () => {
             root: __dirname,
             configName: "configs/test-path-config-async",
         })
-        const fileOptions: DataSourceOptions =
-            await connectionOptionsReader.get("file")
-        expect(fileOptions.database).to.have.string("/test-js-async")
+        const fileOptions = await connectionOptionsReader.get("file")
+        expect(fileOptions.database).toContain("/test-js-async")
     })
 
     it("properly loads config with specified file path from esm in js", async () => {
@@ -77,7 +77,7 @@ describe("ConnectionOptionsReader", () => {
         })
         const fileOptions: DataSourceOptions =
             await connectionOptionsReader.get("file")
-        expect(fileOptions.database).to.have.string("/test-js-esm")
+        expect(fileOptions.database).toContain("/test-js-esm")
     })
 
     it("properly loads config from .env file", async () => {
@@ -87,8 +87,8 @@ describe("ConnectionOptionsReader", () => {
         })
         const [fileOptions]: DataSourceOptions[] =
             await connectionOptionsReader.all()
-        expect(fileOptions.database).to.have.string("test-env")
-        expect(process.env.TYPEORM_DATABASE).to.equal("test-env")
+        expect(fileOptions.database).toContain("test-env")
+        expect(process.env.TYPEORM_DATABASE).toBe("test-env")
     })
 
     it("properly loads config from ormconfig.env file", async () => {
@@ -98,8 +98,8 @@ describe("ConnectionOptionsReader", () => {
         })
         const [fileOptions]: DataSourceOptions[] =
             await connectionOptionsReader.all()
-        expect(fileOptions.database).to.have.string("test-ormconfig-env")
-        expect(process.env.TYPEORM_DATABASE).to.equal("test-ormconfig-env")
+        expect(fileOptions.database).toContain("test-ormconfig-env")
+        expect(process.env.TYPEORM_DATABASE).toBe("test-ormconfig-env")
     })
 
     it("properly loads config ormconfig.env when given multiple choices", async () => {
@@ -108,7 +108,7 @@ describe("ConnectionOptionsReader", () => {
         })
         const [fileOptions]: DataSourceOptions[] =
             await connectionOptionsReader.all()
-        expect(fileOptions.database).to.have.string("test-ormconfig-env")
-        expect(process.env.TYPEORM_DATABASE).to.equal("test-ormconfig-env")
+        expect(fileOptions.database).toContain("test-ormconfig-env")
+        expect(process.env.TYPEORM_DATABASE).toBe("test-ormconfig-env")
     })
-})
+}) 

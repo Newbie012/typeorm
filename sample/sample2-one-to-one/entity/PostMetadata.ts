@@ -3,6 +3,7 @@ import {
     Entity,
     OneToOne,
     PrimaryGeneratedColumn,
+    Relation,
 } from "../../../src/index"
 import { Post } from "./Post"
 
@@ -15,5 +16,5 @@ export class PostMetadata {
     description: string
 
     @OneToOne(() => Post, (post) => post.metadata)
-    post: Post
+    post: Relation<Post>
 }

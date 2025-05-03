@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { expect } from "chai"
+import { describe, beforeAll, beforeEach, afterAll, it, expect } from "vitest"
 import {
     closeTestingConnections,
     createTestingConnections,
@@ -10,17 +10,16 @@ import { Post } from "./entity/Post"
 
 describe("columns > getters and setters", () => {
     let connections: DataSource[]
-    before(
-        async () =>
-            (connections = await createTestingConnections({
-                entities: [Post],
-            })),
-    )
+    beforeAll(async () => {
+        connections = await createTestingConnections({
+            entities: [Post],
+        })
+    })
     beforeEach(() => reloadTestingDatabases(connections))
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
-    it("should not update columns marked with readonly property", () =>
-        Promise.all(
+    it("should not update columns marked with readonly property", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const postRepository = connection.getRepository(Post)
 
@@ -33,13 +32,14 @@ describe("columns > getters and setters", () => {
                 const loadedPost1 = await postRepository.findOneBy({
                     id: post.id,
                 })
-                expect(loadedPost1!.title).to.be.equal("bye")
+                expect(loadedPost1!.title).toBe("bye")
 
                 // try to load a column by its value
                 const loadedPost2 = await postRepository.findOneBy({
                     title: "bye",
                 })
-                expect(loadedPost2!.title).to.be.equal("bye")
+                expect(loadedPost2!.title).toBe("bye")
             }),
-        ))
+        )
+    })
 })

@@ -1,5 +1,5 @@
+import { describe, it, expect } from "vitest"
 import { isAbsolute, toPortablePath } from "../../../src/util/PathUtils"
-import { expect } from "chai"
 import { withPlatform } from "../../utils/test-utils"
 
 describe(`path-utils`, () => {
@@ -20,7 +20,7 @@ describe(`path-utils`, () => {
                 expect(
                     isAbsolute(aPath),
                     `${aPath} did not match ${expected}`,
-                ).to.equal(expected)
+                ).toBe(expected)
             }
         })
     })
@@ -36,7 +36,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
                 } else {
                     it(`shouldn't change absolute posix paths when producing portable path`, () => {
@@ -46,7 +46,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`shouldn't change absolute paths that are already portable`, () => {
@@ -56,7 +56,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should normalize the slashes in relative Windows paths`, () => {
@@ -66,7 +66,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should transform Windows paths into their posix counterparts (uppercase drive)`, () => {
@@ -76,7 +76,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should transform Windows paths into their posix counterparts (lowercase drive)`, () => {
@@ -86,7 +86,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should transform Windows paths into their posix counterparts (forward slashes)`, () => {
@@ -96,7 +96,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should support Windows paths that contain both backslashes and forward slashes`, () => {
@@ -106,7 +106,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should support drive: Windows paths`, () => {
@@ -116,7 +116,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should support UNC Windows paths (\\\\[server]\\[sharename]\\)`, () => {
@@ -126,7 +126,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should support Long UNC Windows paths (\\\\?\\[server]\\[sharename]\\)`, () => {
@@ -136,7 +136,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should support Long UNC Windows paths (\\\\?\\UNC\\[server]\\[sharename]\\)`, () => {
@@ -146,7 +146,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should support Long UNC Windows paths (\\\\?\\[drive_spec]:\\)`, () => {
@@ -156,7 +156,7 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
 
                     it(`should support Long UNC Windows paths with dot (\\\\.\\[physical_device]\\)`, () => {
@@ -166,10 +166,10 @@ describe(`path-utils`, () => {
                             withPlatform(platform, () =>
                                 toPortablePath(inputPath),
                             ),
-                        ).to.equal(outputPath)
+                        ).toBe(outputPath)
                     })
                 }
             })
         }
     })
-})
+}) 

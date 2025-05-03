@@ -6,16 +6,12 @@ export async function importOrRequireFile(
     filePath: string,
 ): Promise<[result: any, moduleType: "esm" | "commonjs"]> {
     const tryToImport = async (): Promise<[any, "esm"]> => {
-        // `Function` is required to make sure the `import` statement wil stay `import` after
-        // transpilation and won't be converted to `require`
-        return [
-            await Function("return filePath => import(filePath)")()(
-                filePath.startsWith("file://")
-                    ? filePath
-                    : pathToFileURL(filePath).toString(),
-            ),
-            "esm",
-        ]
+        // Use dynamic import directly instead of Function constructor
+        const fileUrl = filePath.startsWith("file://")
+            ? filePath
+            : pathToFileURL(filePath).toString()
+        const module = await import(fileUrl)
+        return [module, "esm"]
     }
     const tryToRequire = async (): Promise<[any, "commonjs"]> => {
         return [require(filePath), "commonjs"]

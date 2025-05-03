@@ -3,9 +3,9 @@ import {
     Entity,
     OneToMany,
     PrimaryGeneratedColumn,
+    Relation,
 } from "../../../src/index"
 import { Post } from "./Post"
-
 @Entity("sample3_post_details")
 export class PostDetails {
     @PrimaryGeneratedColumn()
@@ -32,5 +32,5 @@ export class PostDetails {
     @OneToMany(() => Post, (post) => post.details, {
         cascade: true,
     })
-    posts: Post[]
+    posts: Relation<Post>[]
 }

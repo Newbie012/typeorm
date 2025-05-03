@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, beforeEach, afterEach, it, expect } from "vitest"
 import "reflect-metadata"
 
 import { QueryRunner } from "../../../src"
@@ -19,7 +19,7 @@ const expectCurrentApplicationName = async (
     const result = await queryRunner.query(
         "SELECT current_setting('application_name') as application_name;",
     )
-    expect(result[0].application_name).to.equal(name)
+    expect(result[0].application_name).toBe(name)
 }
 
 describe("Connection replication", () => {
@@ -72,12 +72,12 @@ describe("Connection replication", () => {
         afterEach(() => closeTestingConnections([connection]))
 
         it("connection.isInitialized should be true", () => {
-            connection.isInitialized.should.be.true
+            expect(connection.isInitialized).toBe(true)
         })
 
         it("query runners should go to the master by default", async () => {
             const queryRunner = connection.createQueryRunner()
-            expect(queryRunner.getReplicationMode()).to.equal("master")
+            expect(queryRunner.getReplicationMode()).toBe("master")
 
             await expectCurrentApplicationName(queryRunner, "master")
             await queryRunner.release()
@@ -85,12 +85,12 @@ describe("Connection replication", () => {
 
         it("query runners can have their replication mode overridden", async () => {
             let queryRunner = connection.createQueryRunner("master")
-            queryRunner.getReplicationMode().should.equal("master")
+            expect(queryRunner.getReplicationMode()).toBe("master")
             await expectCurrentApplicationName(queryRunner, "master")
             await queryRunner.release()
 
             queryRunner = connection.createQueryRunner("slave")
-            queryRunner.getReplicationMode().should.equal("slave")
+            expect(queryRunner.getReplicationMode()).toBe("slave")
             await expectCurrentApplicationName(queryRunner, "slave")
             await queryRunner.release()
         })
@@ -104,7 +104,7 @@ describe("Connection replication", () => {
                     "current_setting",
                 )
                 .execute()
-            expect(result[0].current_setting).to.equal("slave")
+            expect(result[0].current_setting).toBe("slave")
         })
 
         it("write queries should go to the master", async () => {
@@ -118,7 +118,7 @@ describe("Connection replication", () => {
                 .returning("title")
                 .execute()
 
-            expect(result.raw[0].title).to.equal("master")
+            expect(result.raw[0].title).toBe("master")
         })
     })
 
@@ -165,7 +165,7 @@ describe("Connection replication", () => {
 
         it("query runners should go to the master by default", async () => {
             const queryRunner = connection.createQueryRunner()
-            expect(queryRunner.getReplicationMode()).to.equal("master")
+            expect(queryRunner.getReplicationMode()).toBe("master")
 
             await expectCurrentApplicationName(queryRunner, "master")
             await queryRunner.release()
@@ -173,12 +173,12 @@ describe("Connection replication", () => {
 
         it("query runners can have their replication mode overridden", async () => {
             let queryRunner = connection.createQueryRunner("master")
-            queryRunner.getReplicationMode().should.equal("master")
+            expect(queryRunner.getReplicationMode()).toBe("master")
             await expectCurrentApplicationName(queryRunner, "master")
             await queryRunner.release()
 
             queryRunner = connection.createQueryRunner("slave")
-            queryRunner.getReplicationMode().should.equal("slave")
+            expect(queryRunner.getReplicationMode()).toBe("slave")
             await expectCurrentApplicationName(queryRunner, "slave")
             await queryRunner.release()
         })
@@ -192,7 +192,7 @@ describe("Connection replication", () => {
                     "current_setting",
                 )
                 .execute()
-            expect(result[0].current_setting).to.equal("master")
+            expect(result[0].current_setting).toBe("master")
         })
     })
 
@@ -227,7 +227,7 @@ describe("Connection replication", () => {
 
         it("query runners should go to the available instance", async () => {
             const queryRunner = connection.createQueryRunner()
-            expect(queryRunner.getReplicationMode()).to.equal("master")
+            expect(queryRunner.getReplicationMode()).toBe("master")
 
             await expectCurrentApplicationName(queryRunner, "")
             await queryRunner.release()
@@ -242,7 +242,7 @@ describe("Connection replication", () => {
                     "current_setting",
                 )
                 .execute()
-            expect(result[0].current_setting).to.equal("")
+            expect(result[0].current_setting).toBe("")
         })
     })
 })

@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, beforeAll, beforeEach, afterAll, it, expect } from "vitest"
 import "reflect-metadata"
 import { DataSource } from "../../../../src"
 import {
@@ -10,49 +10,41 @@ import { Test } from "./entity/Test"
 
 describe("columns > comments", () => {
     let connections: DataSource[]
-    before(
-        async () =>
-            (connections = await createTestingConnections({
-                entities: [Test],
-                // Only supported on cockroachdb, mysql, postgres, and sap
-                enabledDrivers: ["cockroachdb", "mysql", "postgres", "sap"],
-            })),
-    )
+    beforeAll(async () => {
+        connections = await createTestingConnections({
+            entities: [Test],
+            // Only supported on cockroachdb, mysql, postgres, and sap
+            enabledDrivers: ["cockroachdb", "mysql", "postgres", "sap"],
+        })
+    })
     beforeEach(() => reloadTestingDatabases(connections))
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
-    it("should persist comments of different types to the database", () =>
-        Promise.all(
+    it("should persist comments of different types to the database", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 const table = (await connection
                     .createQueryRunner()
                     .getTable("test"))!
 
-                expect(table.findColumnByName("a")!.comment).to.be.equal(
-                    "Hello World",
-                )
-                expect(table.findColumnByName("b")!.comment).to.be.equal(
-                    "Hello\nWorld",
-                )
-                expect(table.findColumnByName("c")!.comment).to.be.equal(
+                expect(table.findColumnByName("a")!.comment).toBe("Hello World")
+                expect(table.findColumnByName("b")!.comment).toBe("Hello\nWorld")
+                expect(table.findColumnByName("c")!.comment).toBe(
                     "Hello World! It's going to be a beautiful day.",
                 )
-                expect(table.findColumnByName("d")!.comment).to.be.equal(
+                expect(table.findColumnByName("d")!.comment).toBe(
                     "Hello World! #@!$`",
                 )
-                expect(table.findColumnByName("e")!.comment).to.be.equal(
+                expect(table.findColumnByName("e")!.comment).toBe(
                     "Hello World. \r\n\t\b\f\v",
                 )
-                expect(table.findColumnByName("f")!.comment).to.be.equal(
+                expect(table.findColumnByName("f")!.comment).toBe(
                     "Hello World.\\",
                 )
-                expect(table.findColumnByName("g")!.comment).to.be.equal(" ")
-                expect(table.findColumnByName("h")!.comment).to.be.equal(
-                    undefined,
-                )
-                expect(table.findColumnByName("i")!.comment).to.be.equal(
-                    undefined,
-                )
+                expect(table.findColumnByName("g")!.comment).toBe(" ")
+                expect(table.findColumnByName("h")!.comment).toBeUndefined()
+                expect(table.findColumnByName("i")!.comment).toBeUndefined()
             }),
-        ))
+        )
+    })
 })

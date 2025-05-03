@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, it, expect } from "vitest"
 import { camelCase, snakeCase } from "../../../src/util/StringUtils"
 
 describe("StringUtils", () => {
@@ -8,7 +8,7 @@ describe("StringUtils", () => {
             const expected = "camel_case_string_here"
             const actual = snakeCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should correctly convert an initial capital", () => {
@@ -16,7 +16,7 @@ describe("StringUtils", () => {
             const expected = "camel_case_string_here"
             const actual = snakeCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should correctly convert strings of capitals", () => {
@@ -24,7 +24,7 @@ describe("StringUtils", () => {
             const expected = "test_abc_item"
             const actual = snakeCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should correctly convert repeating camelcase groups", () => {
@@ -32,12 +32,12 @@ describe("StringUtils", () => {
             const expected = "option_a_or_b"
             const actual = snakeCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should do nothing with strings that are already snakecase", () => {
             const expected = "snake_case_string_here"
-            expect(snakeCase(expected)).to.be.equal(expected, expected)
+            expect(snakeCase(expected)).toBe(expected)
         })
 
         it("should correctly convert mixed strings into snakecase", () => {
@@ -45,7 +45,7 @@ describe("StringUtils", () => {
             const expected = "option_a_or_b_or_c"
             const actual = snakeCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should correctly convert strings with numbers", () => {
@@ -53,7 +53,7 @@ describe("StringUtils", () => {
             const expected = "device1_status"
             const actual = snakeCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should match the examples given in the older implementation", () => {
@@ -70,10 +70,7 @@ describe("StringUtils", () => {
 
             for (const [input, expected] of Object.entries(examples)) {
                 const actual = snakeCase(input)
-                expect(actual).to.be.equal(
-                    expected,
-                    `Failed for Input: ${input}`,
-                )
+                expect(actual).toBe(expected)
             }
         })
     })
@@ -84,7 +81,7 @@ describe("StringUtils", () => {
             const expected = "camelCaseStringHere"
             const actual = camelCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should convert with first capital letter", () => {
@@ -92,7 +89,7 @@ describe("StringUtils", () => {
             const expected = "CamelCaseStringHere"
             const actual = camelCase(input, true)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should correctly convert repeating snakecase groups", () => {
@@ -100,15 +97,15 @@ describe("StringUtils", () => {
             const expected = "optionAOrBOrC"
             const actual = camelCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
 
         it("should do nothing with strings that are already camelcase", () => {
             const expected1 = "camelCaseStringHere"
-            expect(camelCase(expected1)).to.be.equal(expected1, expected1)
+            expect(camelCase(expected1)).toBe(expected1)
 
             const expected2 = "CamelCaseStringHere"
-            expect(camelCase(expected2, true)).to.be.equal(expected2, expected2)
+            expect(camelCase(expected2, true)).toBe(expected2)
         })
 
         it("should correctly convert strings with numbers", () => {
@@ -116,7 +113,7 @@ describe("StringUtils", () => {
             const expected = "device1Status"
             const actual = camelCase(input)
 
-            expect(actual).to.be.equal(expected, `Failed for Input: ${input}`)
+            expect(actual).toBe(expected)
         })
     })
 })

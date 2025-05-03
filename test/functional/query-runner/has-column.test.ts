@@ -4,17 +4,18 @@ import {
     closeTestingConnections,
     createTestingConnections,
 } from "../../utils/test-utils"
+import { describe, it, beforeAll, afterAll, expect } from "vitest"
 
 describe("query runner > has column", () => {
     let connections: DataSource[]
-    before(async () => {
+    beforeAll(async () => {
         connections = await createTestingConnections({
             entities: [__dirname + "/entity/*{.js,.ts}"],
             schemaCreate: true,
             dropSchema: true,
         })
     })
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
     it("should correctly check if column exist", () =>
         Promise.all(
@@ -35,10 +36,10 @@ describe("query runner > has column", () => {
                     "description",
                 )
 
-                hasIdColumn.should.be.true
-                hasNameColumn.should.be.true
-                hasVersionColumn.should.be.true
-                hasDescriptionColumn.should.be.false
+                expect(hasIdColumn).toBe(true)
+                expect(hasNameColumn).toBe(true)
+                expect(hasVersionColumn).toBe(true)
+                expect(hasDescriptionColumn).toBe(false)
 
                 await queryRunner.release()
             }),

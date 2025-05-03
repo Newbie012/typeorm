@@ -1,4 +1,4 @@
-import { expect } from "chai"
+import { describe, it, expect } from "vitest"
 import fs from "fs/promises"
 import path from "path"
 
@@ -20,7 +20,7 @@ describe("ImportUtils.importOrRequireFile", () => {
         `
 
         try {
-            await fs.rmdir(testDir, { recursive: true })
+            await fs.rm(testDir, { recursive: true, force: true })
         } catch {
             // no-op
         }
@@ -36,12 +36,12 @@ describe("ImportUtils.importOrRequireFile", () => {
 
         const [exports, moduleType] = await importOrRequireFile(jsFilePath)
 
-        expect(exports).to.not.be.eq(null)
-        expect(moduleType).to.be.eq("esm")
-        expect(exports.default).to.be.a("function")
-        expect(exports.number).to.be.eq(6)
+        expect(exports).not.toBeNull()
+        expect(moduleType).toBe("esm")
+        expect(typeof exports.default).toBe("function")
+        expect(exports.number).toBe(6)
 
-        await fs.rmdir(testDir, { recursive: true })
+        await fs.rm(testDir, { recursive: true, force: true })
     })
 
     it("should import .js file as CommonJS", async () => {
@@ -61,7 +61,7 @@ describe("ImportUtils.importOrRequireFile", () => {
         `
 
         try {
-            await fs.rmdir(testDir, { recursive: true })
+            await fs.rm(testDir, { recursive: true, force: true })
         } catch {
             // no-op
         }
@@ -77,12 +77,12 @@ describe("ImportUtils.importOrRequireFile", () => {
 
         const [exports, moduleType] = await importOrRequireFile(jsFilePath)
 
-        expect(exports).to.not.be.eq(null)
-        expect(moduleType).to.be.eq("commonjs")
-        expect(exports.test).to.be.a("function")
-        expect(exports.number).to.be.eq(6)
+        expect(exports).not.toBeNull()
+        expect(moduleType).toBe("commonjs")
+        expect(typeof exports.test).toBe("function")
+        expect(exports.number).toBe(6)
 
-        await fs.rmdir(testDir, { recursive: true })
+        await fs.rm(testDir, { recursive: true, force: true })
     })
 
     it("should import .mjs file as ESM", async () => {
@@ -97,7 +97,7 @@ describe("ImportUtils.importOrRequireFile", () => {
         `
 
         try {
-            await fs.rmdir(testDir, { recursive: true })
+            await fs.rm(testDir, { recursive: true, force: true })
         } catch {
             // no-op
         }
@@ -108,12 +108,12 @@ describe("ImportUtils.importOrRequireFile", () => {
 
         const [exports, moduleType] = await importOrRequireFile(jsFilePath)
 
-        expect(exports).to.not.be.eq(null)
-        expect(moduleType).to.be.eq("esm")
-        expect(exports.default).to.be.a("function")
-        expect(exports.number).to.be.eq(6)
+        expect(exports).not.toBeNull()
+        expect(moduleType).toBe("esm")
+        expect(typeof exports.default).toBe("function")
+        expect(exports.number).toBe(6)
 
-        await fs.rmdir(testDir, { recursive: true })
+        await fs.rm(testDir, { recursive: true, force: true })
     })
 
     it("should import .cjs file as CommonJS", async () => {
@@ -130,7 +130,7 @@ describe("ImportUtils.importOrRequireFile", () => {
         `
 
         try {
-            await fs.rmdir(testDir, { recursive: true })
+            await fs.rm(testDir, { recursive: true, force: true })
         } catch {
             // no-op
         }
@@ -141,12 +141,12 @@ describe("ImportUtils.importOrRequireFile", () => {
 
         const [exports, moduleType] = await importOrRequireFile(jsFilePath)
 
-        expect(exports).to.not.be.eq(null)
-        expect(moduleType).to.be.eq("commonjs")
-        expect(exports.test).to.be.a("function")
-        expect(exports.number).to.be.eq(6)
+        expect(exports).not.toBeNull()
+        expect(moduleType).toBe("commonjs")
+        expect(typeof exports.test).toBe("function")
+        expect(exports.number).toBe(6)
 
-        await fs.rmdir(testDir, { recursive: true })
+        await fs.rm(testDir, { recursive: true, force: true })
     })
 
     it("should import .json file as CommonJS", async () => {
@@ -156,7 +156,7 @@ describe("ImportUtils.importOrRequireFile", () => {
         const jsonFileContent = { test: 6 }
 
         try {
-            await fs.rmdir(testDir, { recursive: true })
+            await fs.rm(testDir, { recursive: true, force: true })
         } catch {
             // no-op
         }
@@ -171,10 +171,10 @@ describe("ImportUtils.importOrRequireFile", () => {
 
         const [exports, moduleType] = await importOrRequireFile(jsonFilePath)
 
-        expect(exports).to.not.be.eq(null)
-        expect(moduleType).to.be.eq("commonjs")
-        expect(exports.test).to.be.eq(6)
+        expect(exports).not.toBeNull()
+        expect(moduleType).toBe("commonjs")
+        expect(exports.test).toBe(6)
 
-        await fs.rmdir(testDir, { recursive: true })
+        await fs.rm(testDir, { recursive: true, force: true })
     })
-})
+}) 

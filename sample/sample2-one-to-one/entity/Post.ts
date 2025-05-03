@@ -3,6 +3,7 @@ import {
     Entity,
     OneToOne,
     PrimaryGeneratedColumn,
+    Relation,
 } from "../../../src/index"
 import { PostDetails } from "./PostDetails"
 import { PostCategory } from "./PostCategory"
@@ -28,7 +29,7 @@ export class Post {
         cascade: true,
     })
     @JoinColumn()
-    category: PostCategory
+    category: Relation<PostCategory>
 
     // post has relation with details. cascade inserts here means if new PostDetails instance will be set to this
     // relation it will be inserted automatically to the db when you save this Post entity
@@ -36,7 +37,7 @@ export class Post {
         cascade: ["insert"],
     })
     @JoinColumn()
-    details?: PostDetails
+    details?: Relation<PostDetails>
 
     // post has relation with details. cascade update here means if new PostDetail instance will be set to this relation
     // it will be inserted automatically to the db when you save this Post entity
@@ -44,23 +45,23 @@ export class Post {
         cascade: ["update"],
     })
     @JoinColumn()
-    image: PostImage
+    image: Relation<PostImage>
 
     // post has relation with details. cascade update here means if new PostDetail instance will be set to this relation
     // it will be inserted automatically to the db when you save this Post entity
     @OneToOne(() => PostMetadata, (metadata) => metadata.post)
     @JoinColumn()
-    metadata: PostMetadata | null
+    metadata: Relation<PostMetadata> | null
 
     // post has relation with details. full cascades here
     @OneToOne(() => PostInformation, (information) => information.post, {
         cascade: true,
     })
     @JoinColumn()
-    information: PostInformation
+    information: Relation<PostInformation>
 
     // post has relation with details. not cascades here. means cannot be persisted, updated or removed
     @OneToOne(() => PostAuthor, (author) => author.post)
     @JoinColumn()
-    author: PostAuthor
+    author: Relation<PostAuthor>
 }

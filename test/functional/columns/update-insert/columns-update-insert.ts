@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { expect } from "chai"
+import { describe, beforeAll, beforeEach, afterAll, it, expect } from "vitest"
 import {
     closeTestingConnections,
     createTestingConnections,
@@ -10,17 +10,16 @@ import { Post } from "./entity/Post"
 
 describe("columns > update and insert control", () => {
     let connections: DataSource[]
-    before(
-        async () =>
-            (connections = await createTestingConnections({
-                entities: [Post],
-            })),
-    )
+    beforeAll(async () => {
+        connections = await createTestingConnections({
+            entities: [Post],
+        })
+    })
     beforeEach(() => reloadTestingDatabases(connections))
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
-    it("should respect column update and insert properties", () =>
-        Promise.all(
+    it("should respect column update and insert properties", async () => {
+        await Promise.all(
             connections.map(async (connection) => {
                 if (connection.driver.options.type === "spanner") {
                     return
@@ -39,11 +38,11 @@ describe("columns > update and insert control", () => {
 
                 // check if all columns are as expected
                 let loadedPost = await postRepository.findOneBy({ id: post.id })
-                expect(loadedPost!.title).to.be.equal("About columns")
-                expect(loadedPost!.text).to.be.equal("Some text about columns")
-                expect(loadedPost!.authorFirstName).to.be.equal("Umed")
-                expect(loadedPost!.authorMiddleName).to.be.equal("Default") // insert blocked
-                expect(loadedPost!.authorLastName).to.be.equal("Default") // insert blocked
+                expect(loadedPost!.title).toBe("About columns")
+                expect(loadedPost!.text).toBe("Some text about columns")
+                expect(loadedPost!.authorFirstName).toBe("Umed")
+                expect(loadedPost!.authorMiddleName).toBe("Default") // insert blocked
+                expect(loadedPost!.authorLastName).toBe("Default") // insert blocked
 
                 // then update all its properties and save again
                 post.title = "About columns1"
@@ -55,11 +54,12 @@ describe("columns > update and insert control", () => {
 
                 // check if all columns are as expected
                 loadedPost = await postRepository.findOneBy({ id: post.id })
-                expect(loadedPost!.title).to.be.equal("About columns1")
-                expect(loadedPost!.text).to.be.equal("Some text about columns1")
-                expect(loadedPost!.authorFirstName).to.be.equal("Umed") // update blocked
-                expect(loadedPost!.authorMiddleName).to.be.equal("B1")
-                expect(loadedPost!.authorLastName).to.be.equal("Default") // update blocked
+                expect(loadedPost!.title).toBe("About columns1")
+                expect(loadedPost!.text).toBe("Some text about columns1")
+                expect(loadedPost!.authorFirstName).toBe("Umed") // update blocked
+                expect(loadedPost!.authorMiddleName).toBe("B1")
+                expect(loadedPost!.authorLastName).toBe("Default") // update blocked
             }),
-        ))
+        )
+    })
 })

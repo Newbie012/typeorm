@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { expect } from "chai"
+import { expect, describe, it, beforeAll, beforeEach, afterAll } from "vitest"
 import { DataSource } from "../../src/data-source/DataSource"
 import { Post } from "../../sample/sample1-simple-entity/entity/Post"
 import {
@@ -14,14 +14,14 @@ describe("insertion", function () {
     // -------------------------------------------------------------------------
 
     let connections: DataSource[]
-    before(
+    beforeAll(
         async () =>
             (connections = await createTestingConnections({
                 entities: [Post],
             })),
     )
     beforeEach(() => reloadTestingDatabases(connections))
-    after(() => closeTestingConnections(connections))
+    afterAll(() => closeTestingConnections(connections))
 
     // -------------------------------------------------------------------------
     // Specifications: persist
@@ -38,13 +38,13 @@ describe("insertion", function () {
                 newPost.likesCount = 0
                 const savedPost = await postRepository.save(newPost)
 
-                savedPost.should.be.equal(newPost)
-                expect(savedPost.id).not.to.be.undefined
+                expect(savedPost).toBe(newPost)
+                expect(savedPost.id).toBeDefined()
 
                 const insertedPost = await postRepository.findOneBy({
                     id: savedPost.id,
                 })
-                insertedPost!.should.be.eql({
+                expect(insertedPost).toEqual({
                     id: savedPost.id,
                     text: "Hello post",
                     title: "this is post title",
